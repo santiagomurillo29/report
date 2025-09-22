@@ -15,15 +15,12 @@ entrypoint:
   sqs:
     region: "us-east-1"
     endpoint: "https://sqs.us-east-1.amazonaws.com/418272784514/report-queue"
-    #queueUrl: "http://localhost:4566/000000000000/sample"
     waitTimeSeconds: 20
     maxNumberOfMessages: 10
     visibilityTimeoutSeconds: 10
     numberOfThreads: 1
 aws:
   region: ${AWS_REGION:us-east-1}
-#  dynamodb:
-#    endpoint: ${DYNAMO_ENDPOINT:http://dynamodb:8000}
 management:
   endpoints:
     web:

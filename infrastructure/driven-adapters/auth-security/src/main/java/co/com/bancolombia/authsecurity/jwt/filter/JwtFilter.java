@@ -38,7 +38,8 @@ public class JwtFilter implements WebFilter {
                 path.startsWith("/swagger-ui") ||
                 path.startsWith("/v3/api-docs") ||
                 path.startsWith("/webjars") ||
-                path.equals("/favicon.ico")) {
+                path.equals("/favicon.ico") ||
+                path.equals("/liveness")) {
             return chain.filter(exchange);
         }
 
@@ -53,7 +54,7 @@ public class JwtFilter implements WebFilter {
 
         return jwtProvider.validate(token)
                 .flatMap(valid -> {
-                    if (!valid) {
+                    if (Boolean.FALSE.equals(valid)) {
                         return authenticationEntryPoint.commence(exchange, new BadCredentialsException("invalid or expired token"));
                     }
 

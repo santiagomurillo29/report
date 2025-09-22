@@ -18,4 +18,6 @@ public class ReportResponseDto {
     @Schema(description = "ReportModel's total approved")
     private Integer totalApproved;
 
+    @Schema(description = "ReportModel's total  amount")
+    private BigDecimal totalAmount;
 }
