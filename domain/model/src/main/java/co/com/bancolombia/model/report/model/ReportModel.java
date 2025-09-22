@@ -1,20 +1,24 @@
 package co.com.bancolombia.model.report.model;
 
+import java.math.BigDecimal;
+
 public class ReportModel {
 
     private String metric;
-    private Integer value;
+    private int value;
+    private BigDecimal amount;
 
     private ReportModel(Builder builder) {
         this.metric = builder.metric;
         this.value = builder.value;
+        this.amount = builder.amount;
     }
 
     public String getMetric() {
         return metric;
     }
 
-    public Integer getValue() {
+    public int getValue() {
         return value;
     }
 
@@ -22,8 +26,12 @@ public class ReportModel {
         this.metric = metric;
     }
 
-    public void setValue(Integer value) {
-        this.value = value;
+    public void setValue(int value) {this.value = value;}
+
+    public BigDecimal getAmount() {return amount;}
+
+    public void setAmount(BigDecimal amount) {
+        this.amount = amount;
     }
 
     public static Builder builder() {
@@ -32,15 +40,21 @@ public class ReportModel {
 
     public static class Builder {
         private String metric;
-        private Integer value;
+        private int value;
+        private BigDecimal amount;
 
         public Builder metric(String metric) {
             this.metric = metric;
             return this;
         }
 
-        public Builder value(Integer value) {
+        public Builder value(int value) {
             this.value = value;
+            return this;
+        }
+
+        public Builder amount(BigDecimal amount) {
+            this.amount = amount;
             return this;
         }
 

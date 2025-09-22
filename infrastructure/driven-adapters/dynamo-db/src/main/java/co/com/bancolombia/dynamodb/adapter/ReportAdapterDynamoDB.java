@@ -6,7 +6,6 @@ import co.com.bancolombia.model.report.gateways.ReportPersistencePort;
 import co.com.bancolombia.model.report.model.ReportModel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Repository;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbAsyncTable;
 import software.amazon.awssdk.enhanced.dynamodb.DynamoDbEnhancedAsyncClient;
@@ -30,20 +29,20 @@ public class ReportAdapterDynamoDB implements ReportPersistencePort {
 
     @Override
     public Mono<ReportModel> saveReport(ReportModel reportModel) {
-        log.info("Iniciando la operación de guardado para la métrica: {}", reportModel.getMetric());
+        log.info("Starting save operation for metric: {}", reportModel.getMetric());
         return Mono.fromFuture(table.putItem(reportMapperDynamo.toEntity(reportModel)))
                 .thenReturn(reportMapperDynamo.toModel(reportMapperDynamo.toEntity(reportModel)))
-                .doOnSuccess(savedReport -> log.info("Reporte para la métrica {} guardado exitosamente.", savedReport.getMetric()))
-                .doOnError(e -> log.error("Error al guardar el reporte para la métrica {}: {}", reportModel.getMetric(), e.getMessage()));
+                .doOnSuccess(savedReport -> log.info("Report for metric {} saved successfully.", savedReport.getMetric()))
+                .doOnError(e -> log.error("Error saving report for metric {}: {}", reportModel.getMetric(), e.getMessage()));
 
     }
 
     @Override
     public Mono<ReportModel> findReport(String metric) {
-        log.info("Buscando reporte por métrica: {}", metric);
+        log.info("Searching report by metric: {}", metric);
         return Mono.fromFuture(table.getItem(Key.builder().partitionValue(metric).build()))
                 .map(reportMapperDynamo::toModel)
-                .doOnSuccess(foundReport -> log.info("Reporte encontrado para la métrica: {}. Valor: {}", foundReport.getMetric(), foundReport.getValue()))
-                .doOnError(e -> log.error("Error al buscar el reporte por métrica {}: {}", metric, e.getMessage()));
+                .doOnSuccess(foundReport -> log.info("Report found for metric: {}. Value: {}. Amount: {}", foundReport.getMetric(), foundReport.getValue(), foundReport.getAmount()))
+                .doOnError(e -> log.error("Error searching report by metric {}: {}", metric, e.getMessage()));
     }
 }

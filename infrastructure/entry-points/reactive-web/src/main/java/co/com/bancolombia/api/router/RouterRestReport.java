@@ -3,8 +3,6 @@ package co.com.bancolombia.api.router;
 import co.com.bancolombia.api.dto.response.ReportResponseDto;
 import co.com.bancolombia.api.handler.HandlerReport;
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,7 +15,6 @@ import org.springframework.web.reactive.function.server.RouterFunction;
 import org.springframework.web.reactive.function.server.ServerResponse;
 
 import static org.springframework.web.reactive.function.server.RequestPredicates.GET;
-import static org.springframework.web.reactive.function.server.RequestPredicates.POST;
 import static org.springframework.web.reactive.function.server.RouterFunctions.route;
 
 @Configuration
@@ -28,7 +25,7 @@ public class RouterRestReport {
                     path = "/api/v1/reportes",
                     method = RequestMethod.GET,
                     beanClass = HandlerReport.class,
-                    beanMethod = "GetReport",
+                    beanMethod = "getReport",
                     operation = @Operation(
                             operationId = "getReport",
                             summary = "Get all report",
@@ -45,9 +42,32 @@ public class RouterRestReport {
                                     @ApiResponse(responseCode = "404", description = "ReportModel not found")
                             }
                     )
+            ),
+            @RouterOperation(
+                    path = "/liveness",
+                    method = RequestMethod.GET,
+                    beanClass = HandlerReport.class,
+                    beanMethod = "getLiveness",
+                    produces = "text/plain",
+                    operation = @Operation(
+                            operationId = "getLiveness",
+                            summary = "Check liveness",
+                            description = "Always returns OK if the service is alive.",
+                            responses = {
+                                    @ApiResponse(
+                                            responseCode = "200",
+                                            description = "Service is alive",
+                                            content = @Content(
+                                                    mediaType = "text/plain",
+                                                    schema = @Schema(example = "OK")
+                                            )
+                                    )
+                            }
+                    )
             )
     })
     public RouterFunction<ServerResponse> routerFunction(HandlerReport handlerReport) {
-        return route(GET("/api/v1/reportes"), handlerReport::GetReport);
+        return route(GET("/api/v1/reportes"), handlerReport::getReport)
+                .andRoute(GET("/liveness"), request -> handlerReport.getLiveness());
     }
 }

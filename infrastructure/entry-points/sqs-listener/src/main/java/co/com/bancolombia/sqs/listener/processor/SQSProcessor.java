@@ -4,6 +4,7 @@ import co.com.bancolombia.sqs.listener.dto.ReportEventDto;
 import co.com.bancolombia.usecase.report.usecase.api.ReportServicePort;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
 import software.amazon.awssdk.services.sqs.model.Message;
@@ -11,6 +12,7 @@ import software.amazon.awssdk.services.sqs.model.Message;
 import java.io.IOException;
 import java.util.function.Function;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SQSProcessor implements Function<Message, Mono<Void>> {
@@ -29,8 +31,8 @@ public class SQSProcessor implements Function<Message, Mono<Void>> {
             return Mono.error(new RuntimeException("Error parsing SQS message", e));
         }
 
-        return reportServicePort.incrementMetric(event.getMetric(), event.getValue())
-                .doOnSuccess(r -> System.out.println("Reporte actualizado en Dynamo"))
+        return reportServicePort.incrementMetric(event.getMetric(), event.getValue(), event.getAmount())
+                .doOnSuccess(r -> log.info("Reporte actualizado en Dynamo"))
                 .then();
     }
 

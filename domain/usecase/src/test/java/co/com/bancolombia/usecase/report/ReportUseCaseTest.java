@@ -12,12 +12,14 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
+import java.math.BigDecimal;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-public class ReportUseCaseTest {
+class ReportUseCaseTest {
 
     @Mock
     ReportPersistencePort reportPersistencePort;
@@ -54,13 +56,18 @@ public class ReportUseCaseTest {
 
     @Test
     void incrementMetric_shouldIncrementValue_whenReportExists() {
-        ReportModel existingReport = ReportModel.builder().metric(metric).value(10).build();
+        ReportModel existingReport = ReportModel.builder()
+                .metric(metric)
+                .value(10)
+                .amount(BigDecimal.ZERO)
+                .build();
+
         int valueToAdd = 5;
 
         given(reportPersistencePort.findReport(metric)).willReturn(Mono.just(existingReport));
         given(reportPersistencePort.saveReport(any(ReportModel.class))).willReturn(Mono.just(existingReport));
 
-        StepVerifier.create(useCase.incrementMetric(metric, valueToAdd))
+        StepVerifier.create(useCase.incrementMetric(metric, valueToAdd, BigDecimal.valueOf(5000.00)))
                 .verifyComplete();
 
         verify(reportPersistencePort).saveReport(any(ReportModel.class));

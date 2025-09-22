@@ -5,12 +5,15 @@ import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbAttri
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbBean;
 import software.amazon.awssdk.enhanced.dynamodb.mapper.annotations.DynamoDbPartitionKey;
 
+import java.math.BigDecimal;
+
 @Setter
 @DynamoDbBean
 public class ReportEntity {
 
     private String metric;
-    private Integer value;
+    private int value;
+    private BigDecimal amount;
 
     @DynamoDbPartitionKey
     @DynamoDbAttribute("metric")
@@ -19,7 +22,12 @@ public class ReportEntity {
     }
 
     @DynamoDbAttribute("valor")
-    public Integer getValue() {
+    public int getValue() {
         return value;
+    }
+
+    @DynamoDbAttribute("amount")
+    public BigDecimal getAmount() {
+        return amount;
     }
 }

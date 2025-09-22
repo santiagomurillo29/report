@@ -12,7 +12,7 @@ import org.mockito.MockitoAnnotations;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import software.amazon.awssdk.services.sqs.model.Message;
-
+import java.math.BigDecimal;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -37,14 +37,17 @@ class SQSProcessorTest {
     @Test
     void apply_should_process_message_successfully() throws Exception {
         String metric = "aprobado";
-        Integer value = 1;
+        int value = 1;
+        BigDecimal totalAmount = BigDecimal.valueOf(5000);
+
         String jsonBody = "{\"metric\":\"" + metric + "\", \"value\":" + value + "}";
 
         Message message = Message.builder().body(jsonBody).build();
-        ReportEventDto event = new ReportEventDto(metric, value);
+        ReportEventDto event = new ReportEventDto(metric, value, totalAmount);
 
         when(objectMapper.readValue(anyString(), any(Class.class))).thenReturn(event);
-        when(reportServicePort.incrementMetric(anyString(), anyInt())).thenReturn(Mono.empty());
+        when(reportServicePort.incrementMetric(anyString(), anyInt(), any(BigDecimal.class)))
+                .thenReturn(Mono.empty());
 
         Mono<Void> result = sqsProcessor.apply(message);
 
